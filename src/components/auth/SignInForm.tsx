@@ -31,7 +31,7 @@ export const SignInForm: React.FC<SignInFormProps> = ({
     register,
     handleSubmit,
     formState: { errors },
-    watch,
+    
   } = useForm<SignInCredentials>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -40,8 +40,6 @@ export const SignInForm: React.FC<SignInFormProps> = ({
       isAdmin: false,
     },
   });
-
-  const isAdmin = watch('isAdmin');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

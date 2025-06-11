@@ -1,7 +1,12 @@
 // src/services/api.ts
-import axios, { type AxiosResponse, AxiosError } from 'axios';
+import axios, { 
+  type AxiosResponse, 
+  AxiosError, 
+  type InternalAxiosRequestConfig,
+  type AxiosRequestConfig 
+} from 'axios';
 import { API_BASE_URL, TOKEN_STORAGE_KEYS } from '@/config/api';
-import type { ApiError, ApiResponse } from '@/types';
+import type { ApiError } from '@/types';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -13,14 +18,14 @@ const api = axios.create({
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );
@@ -29,7 +34,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as any;
+    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
     
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -45,7 +50,9 @@ api.interceptors.response.use(
           localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, access_token);
           
           // Retry original request
-          originalRequest.headers.Authorization = `Bearer ${access_token}`;
+          if (originalRequest.headers) {
+            originalRequest.headers.Authorization = `Bearer ${access_token}`;
+          }
           return api(originalRequest);
         } catch (refreshError) {
           // Refresh failed, clear tokens and redirect to login
