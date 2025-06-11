@@ -5,6 +5,7 @@ import type {
   SignInCredentials,
   SignUpCredentials,
   ResetPasswordData,
+  ForgotPasswordData,
   ApiResponse,
   AuthTokens,
   User,
@@ -40,38 +41,33 @@ export const authService = {
     }
   },
 
-  forgotPassword: async (email: string) => {
-    const response = await fetch('/api/password/forgot', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
-    });
+  forgotPassword: async (payload: ForgotPasswordData) => {
+    try {
+      const response = await api.post(API_ENDPOINTS.AUTH.FORGET_PASSWORD, payload);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw handleApiError(errorData);
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
     }
-
-    return response.json();
   },
 
   resetPassword: async (data: ResetPasswordData) => {
-    const response = await fetch('/api/password/reset', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    try {
+      const response = await api.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, data);
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw handleApiError(errorData);
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
     }
-
-    return response.json();
   },
 
 

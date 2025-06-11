@@ -61,8 +61,8 @@ export const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
   };
 
   const handleFormSubmit = (data: ForgotPasswordFormData) => {
-    const { confirmPassword, ...resetData } = data;
-    onSubmit(resetData);
+    const {  newPassword, token } = data;
+    onSubmit({ token: token, new_password: newPassword });
   };
 
   return (

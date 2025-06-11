@@ -1,10 +1,12 @@
 // src/services/api.ts
-import axios, { 
-  type AxiosResponse, 
-  AxiosError, 
-  type InternalAxiosRequestConfig,
-  type AxiosRequestConfig 
-} from 'axios';
+import axios ,{AxiosError} from "axios";
+import type {
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from "axios";
+
+
 import { API_BASE_URL, TOKEN_STORAGE_KEYS } from '@/config/api';
 import type { ApiError } from '@/types';
 
@@ -42,7 +44,13 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
       if (refreshToken) {
         try {
-          const response = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
+          interface RefreshTokenResponse {
+            data: {
+              access_token: string;
+            }
+          }
+
+          const response = await axios.post<RefreshTokenResponse>(`${API_BASE_URL}/auth/refresh-token`, {
             refresh_token: refreshToken,
           });
           
@@ -69,17 +77,19 @@ api.interceptors.response.use(
 );
 
 export const handleApiError = (error: any): ApiError => {
-  if (error.response?.data?.message) {
-    return {
-      message: error.response.data.message,
-      statusCode: error.response.status,
-    };
+  if (error instanceof AxiosError) {
+    if (error.response?.data?.message) {
+      return {
+        message: error.response.data.message,
+        statusCode: error.response.status,
+      };
+    }
   }
   
-  if (error.message) {
+  if (error instanceof Error) {
     return {
       message: error.message,
-      statusCode: error.response?.status || 500,
+      statusCode: 500,
     };
   }
   

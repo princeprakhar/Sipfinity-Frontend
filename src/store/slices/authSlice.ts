@@ -227,7 +227,7 @@ export const forgotPassword = createAsyncThunk(
   'auth/forgotPassword',
   async ({ email }: { email: string }, { rejectWithValue }) => {
     try {
-      const response = await authService.forgotPassword(email);
+      const response = await authService.forgotPassword({email});
       return response;
     } catch (error) {
       return rejectWithValue(error as ApiError);

@@ -36,9 +36,13 @@ export interface SignUpCredentials {
 }
 export interface ResetPasswordData {
   token: string;
-  newPassword: string;
+  new_password: string;
 }
 
+
+export interface ForgotPasswordData {
+  email: string;
+}
 
 
 
