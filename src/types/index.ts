@@ -12,12 +12,16 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
+// src/types/index.ts (or wherever your types are defined)
 export interface AuthState {
   user: User | null;
   tokens: AuthTokens | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
+  // Add these new fields for token validation
+  resetToken: string | null;
+  tokenValidated: boolean;
 }
 
 export interface SignInCredentials {

@@ -56,6 +56,15 @@ export const authService = {
     }
   },
 
+  validateResetToken: async (token: string) => {
+    try {
+      const response = await api.get(`${API_ENDPOINTS.AUTH.VALIDATE_RESET_TOKEN}?token=${token}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
   resetPassword: async (data: ResetPasswordData) => {
     try {
       const response = await api.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, data);

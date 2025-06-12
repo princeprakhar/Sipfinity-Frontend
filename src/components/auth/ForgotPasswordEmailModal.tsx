@@ -3,6 +3,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -19,7 +20,7 @@ type ForgotPasswordEmailData = {
 interface ForgotPasswordEmailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: ForgotPasswordEmailData) => void;
+  onSubmit: (data: ForgotPasswordEmailData) => Promise<void>;
   isLoading: boolean;
   error?: string;
 }
@@ -31,6 +32,7 @@ export const ForgotPasswordEmailModal: React.FC<ForgotPasswordEmailModalProps> =
   isLoading,
   error,
 }) => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -48,9 +50,20 @@ export const ForgotPasswordEmailModal: React.FC<ForgotPasswordEmailModalProps> =
     onClose();
   };
 
+  const handleFormSubmit = async (data: ForgotPasswordEmailData) => {
+    try {
+      await onSubmit(data);
+      // After successful email send, redirect to token validation
+      handleClose();
+      navigate(`/validate-token?email=${data.email}`);
+    } catch (error) {
+      console.error('Failed to send reset email:', error);
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Forgot Password" size="md">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
         <div className="text-center mb-6">
           <p className="text-gray-600 dark:text-gray-400">
             Enter your email address and we'll send you a reset token to create a new password.

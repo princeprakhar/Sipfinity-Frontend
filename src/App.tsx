@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ValidateTokenPage } from '@/pages/ValidateTokenPage';
 
 import { store, persistor } from '@/store';
 import { useTheme } from '@/hooks/useTheme';
@@ -47,6 +48,15 @@ const AppContent: React.FC = () => {
             } >
             <Route index element={<ItemsPage />} />
           </Route>
+
+          <Route 
+            path="/validate-token" 
+            element={
+              <ValidateTokenPage
+              />
+            } 
+          />
+
         </Routes>
 
       </Router>
