@@ -8,12 +8,12 @@ import type {
   ForgotPasswordData,
   ApiResponse,
   AuthTokens,
-  User,
+  BackendUser,
 } from '@/types';
 
 export const authService = {
   async signIn(credentials: SignInCredentials): Promise<ApiResponse<{
-    user: User;
+    user: BackendUser;
     tokens: AuthTokens;
   }>> {
     try {
@@ -29,7 +29,7 @@ export const authService = {
   },
 
   async signUp(credentials: SignUpCredentials): Promise<ApiResponse<{
-    user: User;
+    user: BackendUser;
     tokens: AuthTokens;
   }>> {
     try {
@@ -39,6 +39,19 @@ export const authService = {
       throw handleApiError(error);
     }
   },
+
+
+  async logout(): Promise<ApiResponse<void>> {
+    try {
+      const response = await api.post(API_ENDPOINTS.AUTH.LOGOUT);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+
+
 
   forgotPassword: async (payload: ForgotPasswordData) => {
     try {
@@ -85,6 +98,20 @@ export const authService = {
       const response = await api.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN, {
         refresh_token: refreshToken,
       });
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+
+
+  async fetchUserProfile(): Promise<ApiResponse<BackendUser>> {
+    try {
+      const response = await api.get(API_ENDPOINTS.AUTH.FETCH_USER_PROFILE);
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
       return response.data;
     } catch (error) {
       throw handleApiError(error);

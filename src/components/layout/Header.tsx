@@ -27,7 +27,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
             <div className="flex items-center space-x-2">
               <Container className="text-primary-600 dark:text-primary-400" size={24} />
               <span className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                Container
+                <a href="/">Container</a>
               </span>
             </div>
           </div>
@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
             
             {user && (
               <div className="flex items-center space-x-3">
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <User size={16} className="text-gray-500 dark:text-gray-400" />
                   <span className="text-sm text-gray-700 dark:text-gray-300">
                     {user.username}
@@ -60,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
                       Admin
                     </span>
                   )}
-                </div>
+                </div> */}
                 
                 <Button
                   variant="ghost"

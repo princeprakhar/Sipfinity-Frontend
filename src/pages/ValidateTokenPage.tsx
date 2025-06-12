@@ -4,13 +4,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Key, CheckCircle } from 'lucide-react';
 import { ResetPasswordModal } from '@/components/auth/ResetPasswordModal';
 import { validateResetToken, resetPassword, clearError, clearResetState } from '@/store/slices/authSlice';
-import { type RootState, type AppDispatch } from '@/store';
+import { type RootState } from '@/store';
+import { useAppDispatch } from '@/hooks';
 
 const tokenValidationSchema = z.object({
   token: z.string().min(1, 'Reset token is required'),
@@ -21,7 +22,7 @@ type TokenValidationData = {
 };
 
 export const ValidateTokenPage: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const userEmail = searchParams.get('email');

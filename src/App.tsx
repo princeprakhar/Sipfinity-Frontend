@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ValidateTokenPage } from '@/pages/ValidateTokenPage';
 
+import { ProfilePage } from '@/pages/ProfilePage';
 import { store, persistor } from '@/store';
 import { useTheme } from '@/hooks/useTheme';
 import { Layout } from '@/components/layout/Layout';
@@ -56,6 +57,17 @@ const AppContent: React.FC = () => {
               />
             } 
           />
+
+          <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Layout/>
+            </ProtectedRoute>
+          }
+        >
+        <Route index element={<ProfilePage />} />
+        </Route>
 
         </Routes>
 

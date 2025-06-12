@@ -5,11 +5,31 @@ export interface User {
   username: string;
   isAdmin: boolean;
   createdAt: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  role: string;
+  avatarUrl?: string;
+  updatedAt?: string;
 }
 
+export interface BackendUser {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone_number: string;
+  role: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+
+
 export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 // src/types/index.ts (or wherever your types are defined)

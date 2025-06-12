@@ -11,9 +11,10 @@ import type {
   AuthTokens,
   ApiError,
 } from '@/types';
+import { transformUser } from '@/components/utils/constants';
 
 const initialState: AuthState = {
-  user: null,
+  user:  null,
   tokens: null,
   isAuthenticated: false,
   isLoading: false,
@@ -85,6 +86,18 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+export const fetchUserProfile = createAsyncThunk(
+  'auth/fetchUserProfile',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authService.fetchUserProfile();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error as ApiError);
+    }
+  }
+);
+
 export const refreshToken = createAsyncThunk(
   'auth/refreshToken',
   async (refreshToken: string, { rejectWithValue }) => {
@@ -125,8 +138,8 @@ const authSlice = createSlice({
       state.tokens = action.payload.tokens;
       state.isAuthenticated = true;
       state.error = null;
-      localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, action.payload.tokens.accessToken);
-      localStorage.setItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN, action.payload.tokens.refreshToken);
+      localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, action.payload.tokens.access_token);
+      localStorage.setItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN, action.payload.tokens.refresh_token);
     },
   },
   extraReducers: (builder) => {
@@ -138,13 +151,13 @@ const authSlice = createSlice({
       })
       .addCase(signIn.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
+        state.user = transformUser(action.payload.user);
+        // console.log("state user", state.user);
         state.tokens = action.payload.tokens;
         state.isAuthenticated = true;
         state.error = null;
-        console.log('Sign in successful:', action.payload);
-        localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, action.payload.tokens.accessToken);
-        localStorage.setItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN, action.payload.tokens.refreshToken);
+        localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, action.payload.tokens.access_token);
+        localStorage.setItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN, action.payload.tokens.refresh_token);
       })
       .addCase(signIn.rejected, (state, action) => {
         state.isLoading = false;
@@ -157,12 +170,12 @@ const authSlice = createSlice({
       })
       .addCase(signUp.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
+        state.user = transformUser(action.payload.user);
         state.tokens = action.payload.tokens;
         state.isAuthenticated = true;
         state.error = null;
-        localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, action.payload.tokens.accessToken);
-        localStorage.setItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN, action.payload.tokens.refreshToken);
+        localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, action.payload.tokens.access_token);
+        localStorage.setItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN, action.payload.tokens.refresh_token);
       })
       .addCase(signUp.rejected, (state, action) => {
         state.isLoading = false;
@@ -215,7 +228,7 @@ const authSlice = createSlice({
       // Refresh Token
       .addCase(refreshToken.fulfilled, (state, action) => {
         if (state.tokens) {
-          state.tokens.accessToken = action.payload.access_token;
+          state.tokens.access_token = action.payload.access_token;
           localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, action.payload.access_token);
         }
       })
@@ -225,6 +238,20 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         localStorage.removeItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
         localStorage.removeItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
+      })
+      // fetchUserProfile
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = transformUser(action.payload);
+        state.error = null;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = (action.payload as ApiError)?.message || 'Failed to fetch user profile';
       });
   },
 });
