@@ -130,7 +130,6 @@ export interface UpdateProfileData {
   lastName: string;
   email: string;
   phoneNumber?: string;
-  username?: string;
 }
 export interface ChangePasswordData {
   currentPassword: string;

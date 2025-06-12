@@ -1,18 +1,10 @@
 import api,{ handleApiError} from './api';
 import {API_ENDPOINTS} from '@/config/api';
-import type {User, UpdateProfileData} from '@/types';
+import type {User} from '@/types';
 
 
 export const profileService = {
-//   async getProfile(): Promise<User> {
-//     try {
-//       return await api.get(API_ENDPOINTS.AUTH.GET_PROFILE);
-//     } catch (error) {
-//       throw handleApiError(error);
-//     }
-//   },
-
-  async updateProfile(data: UpdateProfileData): Promise<User> {
+  async updateProfile(data: {first_name: string, last_name: string, email: string, phone_number: string}): Promise<User> {
     try {
       const response = await api.put(API_ENDPOINTS.AUTH.UPDATE_PROFILE, data);
       return response.data;

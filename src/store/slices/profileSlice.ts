@@ -14,7 +14,7 @@ const initialState: ProfileState = {
 
 export const updateProfile = createAsyncThunk(
   'profile/updateProfile',
-  async (data: UpdateProfileData, { rejectWithValue }) => {
+  async (data: {first_name: string, last_name: string, email: string, phone_number: string}, { rejectWithValue }) => {
     try {
       const response = await profileService.updateProfile(data);
       return response;

@@ -78,10 +78,10 @@ export const ProfileDetails: React.FC = () => {
     try {
       // Dispatch the updateProfile thunk
       const result = await dispatch(updateProfile({
-        firstName: data.firstName,
-        lastName: data.lastName,
+        first_name: data.firstName,
+        last_name: data.lastName,
         email: data.email,
-        phoneNumber: data.phoneNumber,
+        phone_number: data.phoneNumber,
         // Add other fields as needed based on your UpdateProfileData type
       })).unwrap();
       console.log('Profile updated:', result);
