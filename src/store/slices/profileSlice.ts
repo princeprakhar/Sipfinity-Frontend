@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { profileService } from '@/services/profileService';
-import type { ProfileState, UpdateProfileData, ChangePasswordData, ApiError } from '@/types';
+import type { ProfileState, ChangePasswordData, ApiError } from '@/types';
 
 
 
