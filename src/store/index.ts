@@ -5,6 +5,7 @@ import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice';
 import themeReducer from './slices/themeSlice';
 import itemsReducer from './slices/itemSlice';
+import profileReducer from './slices/profileSlice';
 
 const persistConfig = {
   key: 'root',
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   theme: themeReducer,
   items: itemsReducer,
+  profile: profileReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

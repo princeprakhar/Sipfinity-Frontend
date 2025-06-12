@@ -1,5 +1,5 @@
 // src/utils/constants.ts
-import  type {BackendUser, User} from "@/types"
+import  type {BackendUser, User,UpdateProfileData} from "@/types"
 export const APP_NAME = 'Container';
 export const APP_DESCRIPTION = 'Modern inventory management solution';
 
@@ -31,3 +31,6 @@ export const transformUser = (backendUser: BackendUser): User => {
     updatedAt: backendUser.updated_at,
   };
 };
+
+
+

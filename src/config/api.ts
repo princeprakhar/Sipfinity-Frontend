@@ -12,6 +12,8 @@ export const API_ENDPOINTS = {
     RESET_PASSWORD: '/password/reset',
     REFRESH_TOKEN: '/auth/refresh-token',
     FETCH_USER_PROFILE: '/auth/profile',
+    UPDATE_PROFILE: '/auth/profile/update',
+    CHANGE_PASSWORD: '/password/change',
   },
 } as const;
 

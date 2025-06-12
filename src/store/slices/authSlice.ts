@@ -152,12 +152,12 @@ const authSlice = createSlice({
       .addCase(signIn.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = transformUser(action.payload.user);
-        // console.log("state user", state.user);
         state.tokens = action.payload.tokens;
         state.isAuthenticated = true;
         state.error = null;
         localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, action.payload.tokens.access_token);
         localStorage.setItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN, action.payload.tokens.refresh_token);
+
       })
       .addCase(signIn.rejected, (state, action) => {
         state.isLoading = false;

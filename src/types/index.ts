@@ -114,3 +114,39 @@ export type TailwindColor =
   | 'blue' | 'indigo' | 'violet' | 'purple'
   | 'yellow' | 'red' | 'rose' | 'fuchsia'
   | 'lime' | 'teal' | 'sky' | 'cyan' | 'slate' | 'orange';
+
+
+
+
+export interface ProfileState {
+  profile: User | null;
+  isLoading: boolean;
+  error: ApiError | null;
+}
+
+
+export interface UpdateProfileData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber?: string;
+  username?: string;
+}
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
+}
+export interface UpdateProfileResponse {
+  success: boolean;
+  message: string;
+  user: User;
+}
+export interface ChangePasswordState {
+  isLoading: boolean;
+  error: ApiError | null;
+  successMessage: string | null;
+}

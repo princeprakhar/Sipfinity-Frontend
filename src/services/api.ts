@@ -42,6 +42,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       const refreshToken = localStorage.getItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
+      console.log("refresh token", refreshToken);
       if (refreshToken) {
         try {
           interface RefreshTokenResponse {
