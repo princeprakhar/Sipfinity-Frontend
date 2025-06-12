@@ -186,7 +186,7 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(validateResetToken.fulfilled, (state, action) => {
+      .addCase(validateResetToken.fulfilled, (state) => {
         state.isLoading = false;
         state.tokenValidated = true;
         state.error = null;

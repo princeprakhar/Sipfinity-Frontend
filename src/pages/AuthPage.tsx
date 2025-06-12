@@ -8,8 +8,8 @@ import { SignUpForm } from '@/components/auth/SignUpForm';
 import { ForgotPasswordContainer } from '@/components/auth/ForgotPasswordContainer';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useAppSelector, useAppDispatch } from '@/hooks';
-import { signIn, signUp, forgotPassword, resetPassword, clearError } from '@/store/slices/authSlice';
-import type { SignInCredentials, SignUpCredentials, ResetPasswordData } from '@/types';
+import { signIn, signUp,   clearError } from '@/store/slices/authSlice';
+import type { SignInCredentials, SignUpCredentials } from '@/types';
 import type { RootState } from '@/store';
 
 type AuthView = 'welcome' | 'signin' | 'signup';
@@ -55,37 +55,9 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  const handleForgotPassword = async (email: string) => {
-    try {
-      const result = await dispatch(forgotPassword({ email }));
-      if (forgotPassword.fulfilled.match(result)) {
-        toast.success('Reset token sent to your email!');
-        // Don't close modal here - let the container handle the step transition
-      } else {
-        throw new Error('Failed to send reset token');
-      }
-    } catch (error) {
-      console.error('Error sending reset token:', error);
-      throw error; // Re-throw to prevent step transition in container
-    }
-  };
+ 
 
-  const handleResetPassword = async (data: ResetPasswordData) => {
-    try {
-      const result = await dispatch(resetPassword(data));
-      if (resetPassword.fulfilled.match(result)) {
-        toast.success('Password reset successfully!');
-        setShowForgotPassword(false);
-        // Optionally redirect to sign in view
-        setCurrentView('signin');
-      } else {
-        throw new Error('Failed to reset password');
-      }
-    } catch (error) {
-      console.error('Error resetting password:', error);
-      throw error; // Re-throw to keep modal open with error
-    }
-  };
+  
 
   const handleCloseForgotPassword = () => {
     setShowForgotPassword(false);
@@ -182,10 +154,6 @@ export const AuthPage: React.FC = () => {
       <ForgotPasswordContainer
         isOpen={showForgotPassword}
         onClose={handleCloseForgotPassword}
-        onForgotPassword={handleForgotPassword}
-        onResetPassword={handleResetPassword}
-        isLoading={isLoading}
-        error={error || undefined}
       />
     </div>
   );
