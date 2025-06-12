@@ -1,5 +1,5 @@
 // src/utils/constants.ts
-import  type {BackendUser, User,UpdateProfileData} from "@/types"
+import  type {BackendUser, User} from "@/types"
 export const APP_NAME = 'Container';
 export const APP_DESCRIPTION = 'Modern inventory management solution';
 
