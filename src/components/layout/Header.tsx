@@ -1,7 +1,7 @@
 
 // src/components/layout/Header.tsx
 import React  from 'react';
-import { Container, LogOut, User, Search } from 'lucide-react';
+import { Container, LogOut, Search } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Button } from '@/components/ui/Button';
 import { useAppSelector, useAppDispatch } from '@/hooks';
