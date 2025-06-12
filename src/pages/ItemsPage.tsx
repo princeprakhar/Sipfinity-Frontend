@@ -1,11 +1,12 @@
 // pages/ItemsPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '../hooks';
-import { setItems,  setSelectedCategory } from '../store/slices/itemSlice';
+import { setItems, setSelectedCategory } from '../store/slices/itemSlice';
 import { mockItems, getCategories } from '@/data/mockItem';
 import FilterTabs from '../components/items/FilterTabs';
 import MasonryGrid from '../components/items/MasonryGrid';
 import ItemDetailModal from '../components/items/ItemDetailModal';
+import AdminBanner from '../components/items/AdminBanner'; // Add this import
 import { type Item } from '../types';
 
 const ItemsPage: React.FC = () => {
@@ -15,12 +16,12 @@ const ItemsPage: React.FC = () => {
 
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const categories = getCategories();
+  
 
   // Initialize items on component mount
   useEffect(() => {
     dispatch(setItems(mockItems));
   }, [dispatch]);
-
 
   const handleCategorySelect = (category: string | null) => {
     dispatch(setSelectedCategory(category));
@@ -38,6 +39,9 @@ const ItemsPage: React.FC = () => {
     <div className={`min-h-screen ${
       theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
     } transition-colors duration-200`}>
+      
+      {/* Admin Banner - only shows if user is admin */}
+      <AdminBanner />
       
       {/* Filter Tabs */}
       <FilterTabs 

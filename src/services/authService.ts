@@ -17,11 +17,10 @@ export const authService = {
     tokens: AuthTokens;
   }>> {
     try {
-      const email = credentials.email;
-      const password = credentials.password;
       const response = await api.post(API_ENDPOINTS.AUTH.SIGNIN, {
-        email,
-        password,
+        email: credentials.email,
+        password: credentials.password,
+        is_admin: credentials.isAdmin ,
       });
       return response.data;
     } catch (error) {
