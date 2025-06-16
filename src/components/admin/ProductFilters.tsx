@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAppSelector, useTheme } from '@/hooks';
 import type { ProductFilters as FilterType } from '@/types/product';
-import { Search, X } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 interface ProductFiltersProps {
   filters: FilterType;

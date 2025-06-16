@@ -29,8 +29,8 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onEditProduct }) =>
         <ProductCard
           key={product.id}
           product={product}
-          isSelected={selectedProducts.includes(product.id)}
-          onSelect={() => handleSelectProduct(product.id)}
+          isSelected={selectedProducts.includes((product.id).toString())}
+          onSelect={() => handleSelectProduct((product.id).toString())}
           onEdit={() => onEditProduct(product)}
         />
       )}

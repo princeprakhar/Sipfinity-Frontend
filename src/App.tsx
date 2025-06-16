@@ -15,7 +15,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AuthPage } from '@/pages/AuthPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import ItemsPage from '@/pages/ItemsPage';
-import ProductManagement from '@/pages/ProductManagementPage';
+// import ProductManagement from '@/pages/ProductManagementPage';
 
 const AppContent: React.FC = () => {
   const { theme } = useTheme();
@@ -71,7 +71,7 @@ const AppContent: React.FC = () => {
 
 
 
-      <Route
+      {/* <Route
           path="/admin"
           element={
             <ProtectedRoute>
@@ -80,7 +80,7 @@ const AppContent: React.FC = () => {
           }
         >
           <Route index element={<ProductManagement />} />
-        </Route>
+        </Route> */}
 
 
 
