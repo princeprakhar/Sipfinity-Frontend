@@ -6,6 +6,10 @@ import authReducer from './slices/authSlice';
 import themeReducer from './slices/themeSlice';
 import itemsReducer from './slices/itemSlice';
 import profileReducer from './slices/profileSlice';
+import productReducer from './slices/productSlice';
+import adminProductReducer from './slices/adminSlice';
+import reviewReducer from './slices/reviewSlice';
+import { reviewApi } from '../services/reviewService';
 
 const persistConfig = {
   key: 'root',
@@ -18,6 +22,12 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   items: itemsReducer,
   profile: profileReducer,
+  products: productReducer,
+  adminProducts: adminProductReducer,
+  review: reviewReducer,
+    
+    // Add the RTK Query API
+  [reviewApi.reducerPath]: reviewApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -27,9 +37,11 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE','review/toggleLikeReview', 'review/initializeUserPreferences'],
+        // Ignore these field paths in the state
+        ignoredPaths: ['review.likedReviews', 'review.dislikedReviews'],
       },
-    }),
+    }).concat(reviewApi.middleware),
 });
 
 export const persistor = persistStore(store);

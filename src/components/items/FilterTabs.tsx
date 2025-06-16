@@ -1,67 +1,28 @@
 // components/items/FilterTabs.tsx
 import React, { useEffect, useRef, useState } from 'react';
-import { type Category, type TailwindColor } from '../../types';
-import { useAppSelector } from '../../hooks';
+import { useTheme } from '@/hooks';
 
 interface FilterTabsProps {
-  categories: Category[];
+  categories: string[] | { data: string[] };
   selectedCategory: string | null;
   onSelectCategory: (category: string | null) => void;
+  isLoading?: boolean;
 }
-
-// Color class mappings for selected state
-const selectedClassMap: Record<TailwindColor, string> = {
-  pink: 'bg-pink-500 text-white shadow-md',
-  amber: 'bg-amber-500 text-white shadow-md',
-  green: 'bg-green-500 text-white shadow-md',
-  emerald: 'bg-emerald-500 text-white shadow-md',
-  blue: 'bg-blue-500 text-white shadow-md',
-  indigo: 'bg-indigo-500 text-white shadow-md',
-  violet: 'bg-violet-500 text-white shadow-md',
-  purple: 'bg-purple-500 text-white shadow-md',
-  yellow: 'bg-yellow-500 text-white shadow-md',
-  red: 'bg-red-500 text-white shadow-md',
-  rose: 'bg-rose-500 text-white shadow-md',
-  fuchsia: 'bg-fuchsia-500 text-white shadow-md',
-  lime: 'bg-lime-500 text-white shadow-md',
-  teal: 'bg-teal-500 text-white shadow-md',
-  sky: 'bg-sky-500 text-white shadow-md',
-  cyan: 'bg-cyan-500 text-white shadow-md',
-  slate: 'bg-slate-500 text-white shadow-md',
-  orange: 'bg-orange-500 text-white shadow-md',
-};
-
-// Color class mappings for default state
-const defaultClassMap: Record<TailwindColor, string> = {
-  pink: 'bg-pink-50 text-pink-700 hover:bg-pink-100 border border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:hover:bg-pink-900/40 dark:border-pink-800/50',
-  amber: 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:hover:bg-amber-900/40 dark:border-amber-800/50',
-  green: 'bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:hover:bg-green-900/40 dark:border-green-800/50',
-  emerald: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:hover:bg-emerald-900/40 dark:border-emerald-800/50',
-  blue: 'bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/40 dark:border-blue-800/50',
-  indigo: 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:hover:bg-indigo-900/40 dark:border-indigo-800/50',
-  violet: 'bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200 dark:bg-violet-900/20 dark:text-violet-300 dark:hover:bg-violet-900/40 dark:border-violet-800/50',
-  purple: 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:hover:bg-purple-900/40 dark:border-purple-800/50',
-  yellow: 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:hover:bg-yellow-900/40 dark:border-yellow-800/50',
-  red: 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:hover:bg-red-900/40 dark:border-red-800/50',
-  rose: 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:hover:bg-rose-900/40 dark:border-rose-800/50',
-  fuchsia: 'bg-fuchsia-50 text-fuchsia-700 hover:bg-fuchsia-100 border border-fuchsia-200 dark:bg-fuchsia-900/20 dark:text-fuchsia-300 dark:hover:bg-fuchsia-900/40 dark:border-fuchsia-800/50',
-  lime: 'bg-lime-50 text-lime-700 hover:bg-lime-100 border border-lime-200 dark:bg-lime-900/20 dark:text-lime-300 dark:hover:bg-lime-900/40 dark:border-lime-800/50',
-  teal: 'bg-teal-50 text-teal-700 hover:bg-teal-100 border border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:hover:bg-teal-900/40 dark:border-teal-800/50',
-  sky: 'bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 dark:bg-sky-900/20 dark:text-sky-300 dark:hover:bg-sky-900/40 dark:border-sky-800/50',
-  cyan: 'bg-cyan-50 text-cyan-700 hover:bg-cyan-100 border border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:hover:bg-cyan-900/40 dark:border-cyan-800/50',
-  slate: 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200 dark:bg-slate-900/20 dark:text-slate-300 dark:hover:bg-slate-900/40 dark:border-slate-800/50',
-  orange: 'bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:hover:bg-orange-900/40 dark:border-orange-800/50',
-};
 
 const FilterTabs: React.FC<FilterTabsProps> = ({
   categories,
   selectedCategory,
   onSelectCategory,
 }) => {
-  const { theme } = useAppSelector((state) => state.theme);
+  const { theme } = useTheme();
   const [isScrolled, setIsScrolled] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
-  
+
+  // Extract the actual categories array from the API response
+  const categoryList = Array.isArray(categories) 
+    ? categories 
+    : categories?.data || [];
+
   useEffect(() => {
     const handleScroll = () => {
       if (filterRef.current) {
@@ -69,10 +30,51 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
         setIsScrolled(position <= 0);
       }
     };
-    
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Generate dynamic colors for categories
+  const getCategoryColor = (category: string, index: number) => {
+    // Pre-defined color palettes for better visual consistency
+    const colorPalettes = [
+      // Blue family
+      { bg: 'bg-blue-500', bgHover: 'hover:bg-blue-600', bgLight: 'bg-blue-100', text: 'text-white', textLight: 'text-blue-800', bgDark: 'bg-blue-800', bgDarkHover: 'hover:bg-blue-700' },
+      // Purple family
+      { bg: 'bg-purple-500', bgHover: 'hover:bg-purple-600', bgLight: 'bg-purple-100', text: 'text-white', textLight: 'text-purple-800', bgDark: 'bg-purple-800', bgDarkHover: 'hover:bg-purple-700' },
+      // Green family
+      { bg: 'bg-green-500', bgHover: 'hover:bg-green-600', bgLight: 'bg-green-100', text: 'text-white', textLight: 'text-green-800', bgDark: 'bg-green-800', bgDarkHover: 'hover:bg-green-700' },
+      // Orange family
+      { bg: 'bg-orange-500', bgHover: 'hover:bg-orange-600', bgLight: 'bg-orange-100', text: 'text-white', textLight: 'text-orange-800', bgDark: 'bg-orange-800', bgDarkHover: 'hover:bg-orange-700' },
+      // Pink family
+      { bg: 'bg-pink-500', bgHover: 'hover:bg-pink-600', bgLight: 'bg-pink-100', text: 'text-white', textLight: 'text-pink-800', bgDark: 'bg-pink-800', bgDarkHover: 'hover:bg-pink-700' },
+      // Indigo family
+      { bg: 'bg-indigo-500', bgHover: 'hover:bg-indigo-600', bgLight: 'bg-indigo-100', text: 'text-white', textLight: 'text-indigo-800', bgDark: 'bg-indigo-800', bgDarkHover: 'hover:bg-indigo-700' },
+      // Teal family
+      { bg: 'bg-teal-500', bgHover: 'hover:bg-teal-600', bgLight: 'bg-teal-100', text: 'text-white', textLight: 'text-teal-800', bgDark: 'bg-teal-800', bgDarkHover: 'hover:bg-teal-700' },
+      // Red family
+      { bg: 'bg-red-500', bgHover: 'hover:bg-red-600', bgLight: 'bg-red-100', text: 'text-white', textLight: 'text-red-800', bgDark: 'bg-red-800', bgDarkHover: 'hover:bg-red-700' },
+      // Yellow family
+      { bg: 'bg-yellow-500', bgHover: 'hover:bg-yellow-600', bgLight: 'bg-yellow-100', text: 'text-white', textLight: 'text-yellow-800', bgDark: 'bg-yellow-800', bgDarkHover: 'hover:bg-yellow-700' },
+      // Cyan family
+      { bg: 'bg-cyan-500', bgHover: 'hover:bg-cyan-600', bgLight: 'bg-cyan-100', text: 'text-white', textLight: 'text-cyan-800', bgDark: 'bg-cyan-800', bgDarkHover: 'hover:bg-cyan-700' },
+      // Emerald family
+      { bg: 'bg-emerald-500', bgHover: 'hover:bg-emerald-600', bgLight: 'bg-emerald-100', text: 'text-white', textLight: 'text-emerald-800', bgDark: 'bg-emerald-800', bgDarkHover: 'hover:bg-emerald-700' },
+      // Rose family
+      { bg: 'bg-rose-500', bgHover: 'hover:bg-rose-600', bgLight: 'bg-rose-100', text: 'text-white', textLight: 'text-rose-800', bgDark: 'bg-rose-800', bgDarkHover: 'hover:bg-rose-700' },
+    ];
+
+    // Generate a consistent color based on category name hash
+    const hash = category.split('').reduce((a, b) => {
+      a = ((a << 5) - a) + b.charCodeAt(0);
+      return a & a;
+    }, 0);
+    
+    // Use both hash and index for better distribution
+    const colorIndex = (Math.abs(hash) + index) % colorPalettes.length;
+    return colorPalettes[colorIndex];
+  };
 
   return (
     <div className="mt-1 mx-1" ref={filterRef}>
@@ -88,41 +90,47 @@ const FilterTabs: React.FC<FilterTabsProps> = ({
           }
         `}
       >
-        {/* All Categories Button */}
-        <button
-          onClick={() => onSelectCategory(null)}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-            !selectedCategory
-              ? 'bg-gray-700 text-white shadow-md'
-              : theme === 'dark'
-              ? 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-          }`}
-        >
-          All
-        </button>
+        {/* <div className="flex gap-2 overflow-x-auto scrollbar-hide px-4"> */}
+          {/* All Categories Button */}
+          <button
+            onClick={() => onSelectCategory(null)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+              !selectedCategory
+                ? 'bg-gray-700 text-white shadow-md transform scale-105'
+                : theme === 'dark'
+                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
+            }`}
+          >
+            All
+          </button>
 
-        {/* Category Buttons */}
-        {categories.map((category) => {
-          const isSelected = selectedCategory === category.id;
-          const buttonClasses = isSelected
-            ? selectedClassMap[category.color]
-            : defaultClassMap[category.color];
+          {/* Category Buttons */}
+          {categoryList.map((category: string, index: number) => {
+            const isSelected: boolean = selectedCategory === category;
+            const colors = getCategoryColor(category, index);
 
-          return (
-            <button
-              key={category.id}
-              onClick={() => onSelectCategory(category.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${buttonClasses}`}
-            >
-              {category.name}
-            </button>
-          );
-        })}
-      </div>
-      
+            return (
+              <button
+                key={index}
+                onClick={() => onSelectCategory(category)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap transform ${
+                  isSelected
+                    ? `${colors.bg} ${colors.text} shadow-lg scale-105 ${colors.bgHover} border-${colors.bgDark} hover:scale-105 whitespace-nowrap`
+                    : theme === 'dark'
+                    ? `${colors.bgDark} text-gray-300 ${colors.bgDarkHover} border border-gray-700 hover:scale-105`
+                    : `${colors.bgLight} ${colors.textLight} hover:bg-opacity-80 border border-gray-200 hover:scale-105 hover:shadow-md`
+                }`}
+              >
+                {category}
+              </button>
+            );
+          })}
+        </div>
+      {/* </div> */}
+
       {/* Spacer to prevent content jump when filter becomes fixed */}
-      {isScrolled && <div className="h-16"></div>}
+      {isScrolled && <div className="h-16" />}
     </div>
   );
 };

@@ -174,7 +174,7 @@ export const ProfileDetails: React.FC = () => {
   if (!user) {
     return (
       <div className={`rounded-lg ${
-        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+        theme === 'dark' ? 'bg-gray-800 ' : 'bg-white'
       } shadow-sm p-6`}>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
@@ -189,7 +189,7 @@ export const ProfileDetails: React.FC = () => {
   return (
     <>
       <div className={`rounded-lg ${
-        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
+        theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white'
       } shadow-sm p-6`}>
         <div className="space-y-6">
           {/* Profile Header */}

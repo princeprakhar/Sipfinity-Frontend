@@ -15,7 +15,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AuthPage } from '@/pages/AuthPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import ItemsPage from '@/pages/ItemsPage';
-// import { useAppSelector } from './hooks';
+import ProductManagement from '@/pages/ProductManagementPage';
 
 const AppContent: React.FC = () => {
   const { theme } = useTheme();
@@ -62,12 +62,28 @@ const AppContent: React.FC = () => {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Layout/>
+              <Layout />
             </ProtectedRoute>
           }
         >
         <Route index element={<ProfilePage />} />
         </Route>
+
+
+
+      <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Layout/>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<ProductManagement />} />
+        </Route>
+
+
+
 
         </Routes>
 

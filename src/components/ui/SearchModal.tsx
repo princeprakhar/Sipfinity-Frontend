@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { setSearchQuery } from '@/store/slices/itemSlice';
+import { useNavigate } from 'react-router-dom';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -163,10 +165,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
             <div className="border-t border-gray-200 dark:border-gray-700 px-4 py-3">
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Quick Actions</p>
               <div className="space-y-1">
-                <button className="w-full text-left px-2 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                <button onClick={() => { navigate("/profile") }} className="w-full text-left px-2 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
                   View Profile
                 </button>
-                <button className="w-full text-left px-2 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                <button onClick={() => { navigate("/settings") }} className="w-full text-left px-2 py-1 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
                   Settings
                 </button>
               </div>

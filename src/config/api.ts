@@ -15,6 +15,38 @@ export const API_ENDPOINTS = {
     UPDATE_PROFILE: '/auth/profile-update',
     CHANGE_PASSWORD: '/password/change',
   },
+  PRODUCTS: {
+    LIST: '/products/',
+    CATEGORIES: '/products/category',
+    DETAILS :(id:Number)=>{
+      return `/products/${id}`
+    },
+    REACT:(id:Number)=>{
+        return `/reviews/product/like/${id}`
+      }
+    
+  },
+  REVIEWS: {
+    PRODUCT: (id: number) => `/reviews/product/${id}`,
+    CREATE: '/reviews/',
+    LIKE: (id: number) => `/reviews/${id}/like`,
+    FLAG: (id: number) => `/reviews/${id}/flag`,
+    MODERATE: (id: number) => `/reviews/${id}/moderate`,
+  },
+  PRODUCTS_ADMIN: {
+    LIST: '/admin/products',
+    DETAILS:(id:Number)=>{
+      return `/admin/products/:${id}`;
+    },
+    UPLOAD_IMAGES:(id:Number)=>{
+      return `/admin/products/${id}/images`;
+    },
+    DELETE_IMAGES:(id:Number,imageId:String)=>{
+      return `/admin/products/${id}/images/${imageId}`;
+    },
+
+    SEARCH: '/admin/products/search',
+  },
 } as const;
 
 export const TOKEN_STORAGE_KEYS = {

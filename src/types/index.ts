@@ -79,6 +79,7 @@ export interface ApiResponse<T = any> {
 }
 
 export interface ApiError {
+  status?: string;
   message: string;
   statusCode: number;
 }
@@ -149,3 +150,8 @@ export interface ChangePasswordState {
   error: ApiError | null;
   successMessage: string | null;
 }
+
+
+
+
+
