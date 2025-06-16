@@ -1,6 +1,6 @@
 // components/admin/BulkActionsBar.tsx
 import React from 'react';
-import { Trash2, X } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useTheme } from '@/hooks';
 
 interface BulkActionsBarProps {

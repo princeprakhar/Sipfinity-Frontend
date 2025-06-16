@@ -2,7 +2,7 @@
 import React from 'react';
 import {  useTheme } from '@/hooks';
 import type { Product } from '@/types/product';
-import { Edit, Trash2, ExternalLink, Check } from 'lucide-react';
+import { Edit, ExternalLink, Check } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -40,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Image */}
       <div className="relative">
         <img
-          src={product.image_src}
+          src={product.images[0].s3_key}
           alt={product.title}
           className="w-full h-48 object-cover"
         />
@@ -89,7 +89,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {product.category}
           </span>
           <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-            {new Date(product.updatedAt).toLocaleDateString()}
+            {new Date(product.updated_at).toLocaleDateString()}
           </span>
         </div>
 

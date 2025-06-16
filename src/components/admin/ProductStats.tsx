@@ -10,7 +10,7 @@ const ProductStats: React.FC = () => {
 
   const stats = React.useMemo(() => {
     const activeProducts = products.filter(p => p.status === 'active').length;
-    const inactiveProducts = products.filter(p => p.status === 'inactive').length;
+    // const inactiveProducts = products.filter(p => p.status === 'inactive').length;
     const averagePrice = products.length > 0 
       ? products.reduce((sum, p) => sum + p.price, 0) / products.length 
       : 0;

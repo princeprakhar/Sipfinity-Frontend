@@ -8,12 +8,12 @@ import {
   clearSelection,
 } from '@/store/slices/productSlice';
 import type{ Product } from '@/types/product';
-import ProductHeader from '@/components/admin/ProductHeader';
-import ProductStats from '@/components/admin/ProductStats';
-import ProductFilters from '@/components/admin/ProductFilters';
-import ProductGrid from '@/components/admin/ProductGrid';
-import ProductModal from '@/components/admin/ProductModal';
-import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal';
+// import ProductHeader from '@/components/admin/ProductHeader';
+// import ProductStats from '@/components/admin/ProductStats';
+// import ProductFilters from '@/components/admin/ProductFilters';
+// import ProductGrid from '@/components/admin/ProductGrid';
+// import ProductModal from '@/components/admin/ProductModal';
+// import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal';
 import BulkActionsBar from '@/components/admin/BulkActionBar';
 import Pagination from '@/components/ui/Pagination';
 import {LoadingSpinner} from '@/components/ui/LoadsSpinner';
