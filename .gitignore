@@ -6,8 +6,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-./src/components/admin/*
-./src/pages/ProductManagementPage
+src/components/admin/*
+src/pages/ProductManagementPage
 node_modules
 dist
 dist-ssr
