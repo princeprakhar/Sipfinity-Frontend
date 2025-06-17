@@ -16,7 +16,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ product, className, onClick }) => {
 
   // Get all active images
   const activeImages = product.images?.filter(img => img.is_active) || [];
-  console.log('Total images:', product.images?.length, 'Active images:', activeImages.length);
+  // console.log('Total images:', product.images?.length, 'Active images:', activeImages.length);
   const hasMultipleImages = activeImages.length > 1;
 
   // Reset currentImageIndex if it's out of bounds

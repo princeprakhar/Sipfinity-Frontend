@@ -11,7 +11,8 @@ import type {
   AuthTokens,
   ApiError,
 } from '@/types';
-import { transformUser } from '@/components/utils/constants';
+import { transformUser } from '@/utils/constants';
+
 
 const initialState: AuthState = {
   user:  null,
@@ -237,7 +238,7 @@ const authSlice = createSlice({
         state.tokens = null;
         state.isAuthenticated = false;
         localStorage.removeItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
-        localStorage.removeItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
+        // localStorage.removeItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
       })
       // fetchUserProfile
       .addCase(fetchUserProfile.pending, (state) => {

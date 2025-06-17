@@ -2,13 +2,13 @@
 import React from 'react';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { toggleProductSelection } from '@/store/slices/productSlice';
-import type { Product } from '@/types/product';
+import type {  Product } from '@/types/product';
 import ProductCard from './ProductCard';
 import MasonryGrid from '@/components/ui/MasonryGrid';
 
 interface ProductGridProps {
   products: Product[];
-  onEditProduct: (product: Product) => void;
+  onEditProduct: (product: Product, s3_url?:string[]) => void;
 }
 
 const ProductGrid: React.FC<ProductGridProps> = ({ products, onEditProduct }) => {
@@ -31,7 +31,12 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onEditProduct }) =>
           product={product}
           isSelected={selectedProducts.includes((product.id).toString())}
           onSelect={() => handleSelectProduct((product.id).toString())}
-          onEdit={() => onEditProduct(product)}
+          onEdit={() => {
+            console.log('Edit product:', product);
+            // Convert Product to CreateProductRequest
+            const { images, ...rest } = product;
+            onEditProduct({ ...rest, images });
+          }}
         />
       )}
       columns={{ default: 1, sm: 2, lg: 3, xl: 4 }}

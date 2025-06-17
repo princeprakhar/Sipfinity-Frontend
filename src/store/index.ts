@@ -7,9 +7,9 @@ import themeReducer from './slices/themeSlice';
 import itemsReducer from './slices/itemSlice';
 import profileReducer from './slices/profileSlice';
 import productReducer from './slices/productSlice';
-import adminProductReducer from './slices/adminSlice';
 import reviewReducer from './slices/reviewSlice';
 import { reviewApi } from '../services/reviewService';
+import  adminReducer from './slices/adminSlice';
 
 const persistConfig = {
   key: 'root',
@@ -23,7 +23,7 @@ const rootReducer = combineReducers({
   items: itemsReducer,
   profile: profileReducer,
   products: productReducer,
-  adminProducts: adminProductReducer,
+  adminProducts: adminReducer,
   review: reviewReducer,
     
     // Add the RTK Query API

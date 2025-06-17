@@ -89,17 +89,19 @@ export const Modal: React.FC<ModalProps> = ({
 interface Modal2Props {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title?: React.ReactNode;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  className?: string; // Added to support the className prop used in ProductModal
 }
 
-const Modal2: React.FC<Modal2Props> = ({ 
-  isOpen, 
-  onClose, 
-  title, 
-  children, 
-  maxWidth = 'lg' 
+const Modal2: React.FC<Modal2Props> = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  maxWidth = 'lg',
+  className
 }) => {
   const { theme } = useTheme();
 
@@ -115,6 +117,23 @@ const Modal2: React.FC<Modal2Props> = ({
     };
   }, [isOpen]);
 
+  // Handle escape key press
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const maxWidthClasses = {
@@ -126,33 +145,52 @@ const Modal2: React.FC<Modal2Props> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center p-4">
-        {/* Backdrop */}
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-          onClick={onClose}
-        />
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+        onClick={onClose}
+      />
+      
+      {/* Modal */}
+      <div 
+        className={`
+          relative bg-white dark:bg-gray-900 rounded-lg shadow-xl 
+          ${maxWidthClasses[maxWidth]} 
+          ${className || 'w-full mx-4'}
+          max-h-[90vh] overflow-hidden
+        `}
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+      >
+        {/* Header */}
+        <div className={`
+          flex items-center justify-between p-6 border-b 
+          ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}
+        `}>
+          <h2 className={`
+            text-lg font-semibold 
+            ${theme === 'dark' ? 'text-white' : 'text-gray-900'}
+          `}>
+            {title}
+          </h2>
+          <button
+            onClick={onClose}
+            className={`
+              p-1 rounded-md transition-colors
+              ${theme === 'dark' 
+                ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-800' 
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+              }
+            `}
+            aria-label="Close modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
         
-        {/* Modal */}
-        <div className={`relative w-full ${maxWidthClasses[maxWidth]} ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-xl`}>
-          {/* Header */}
-          <div className={`flex items-center justify-between p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-            <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {title}
-            </h3>
-            <button
-              onClick={onClose}
-              className={`p-2 rounded-md ${theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'} transition-colors`}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-          
-          {/* Content */}
-          <div className="p-6">
-            {children}
-          </div>
+        {/* Content */}
+        <div className="flex-1">
+          {children}
         </div>
       </div>
     </div>

@@ -98,6 +98,7 @@ export const authService = {
       const response = await api.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN, {
         refresh_token: refreshToken,
       });
+      console.log("response refresh data from the server", response.data);
       return response.data;
     } catch (error) {
       throw handleApiError(error);

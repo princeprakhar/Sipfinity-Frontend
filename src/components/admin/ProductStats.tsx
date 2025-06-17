@@ -1,43 +1,52 @@
 // components/admin/ProductStats.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAppSelector } from '@/hooks';
-import { Package, DollarSign, TrendingUp, Archive } from 'lucide-react';
+import { Package, IndianRupee, Archive } from 'lucide-react';
 import { useTheme } from '@/hooks';
+import { fetchCategories } from '@/store/slices/productSlice';
+import { useAppDispatch } from '@/hooks';
+import { fetchProducts } from '@/store/slices/adminSlice';
 
 const ProductStats: React.FC = () => {
-  const { products } = useAppSelector(state => state.products);
+  const dispatch = useAppDispatch();
+  const {  categories} = useAppSelector(state => state.products);
   const { theme } = useTheme();
-
+  const { products } = useAppSelector(state => state.adminProducts);
+  useEffect(() => {
+    dispatch(fetchProducts({ page: 1, limit: 10 }));
+    dispatch(fetchCategories());
+  }, []);
+  
   const stats = React.useMemo(() => {
-    const activeProducts = products.filter(p => p.status === 'active').length;
+    // const activeProducts = products.filter(p => p.status === 'active').length;
     // const inactiveProducts = products.filter(p => p.status === 'inactive').length;
-    const averagePrice = products.length > 0 
-      ? products.reduce((sum, p) => sum + p.price, 0) / products.length 
+    const averagePrice = products.list.length > 0 
+      ? products.list.reduce((sum, p) => sum + p.price, 0) / products.list.length 
       : 0;
-    const categories = new Set(products.map(p => p.category)).size;
+
 
     return [
       {
         title: 'Total Products',
-        value: products.length.toString(),
+        value: products.list.length.toString(),
         icon: Package,
         color: 'blue'
       },
-      {
-        title: 'Active Products',
-        value: activeProducts.toString(),
-        icon: TrendingUp,
-        color: 'green'
-      },
+      // {
+      //   title: 'Active Products',
+      //   value: products.list.every.toString(),
+      //   icon: TrendingUp,
+      //   color: 'green'
+      // },
       {
         title: 'Average Price',
-        value: `$${averagePrice.toFixed(2)}`,
-        icon: DollarSign,
+        value: `${averagePrice.toFixed(2)}`,
+        icon: IndianRupee,
         color: 'yellow'
       },
       {
-        title: 'Categories',
-        value: categories.toString(),
+        title: 'Categories Count',
+        value: categories.length.toString(),
         icon: Archive,
         color: 'purple'
       }

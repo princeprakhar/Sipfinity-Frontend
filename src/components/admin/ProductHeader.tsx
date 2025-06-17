@@ -1,18 +1,16 @@
 // components/admin/ProductHeader.tsx
 import React from 'react';
 import {  useTheme } from '@/hooks';
-import { Plus, Download,  Filter } from 'lucide-react';
+import { Plus, Download } from 'lucide-react';
 
 interface ProductHeaderProps {
   onAddProduct: () => void;
   onExport: () => void;
-  onToggleFilters: () => void;
 }
 
 const ProductHeader: React.FC<ProductHeaderProps> = ({
   onAddProduct,
   onExport,
-  onToggleFilters
 }) => {
   const { theme } = useTheme();
 
@@ -29,17 +27,6 @@ const ProductHeader: React.FC<ProductHeaderProps> = ({
         </div>
         
         <div className="flex flex-wrap gap-3">
-          <button
-            onClick={onToggleFilters}
-            className={`inline-flex items-center px-4 py-2 border rounded-md text-sm font-medium transition-colors
-              ${theme === 'dark' 
-                ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-              }`}
-          >
-            <Filter className="w-4 h-4 mr-2" />
-            Filters
-          </button>
           
           <button
             onClick={onExport}

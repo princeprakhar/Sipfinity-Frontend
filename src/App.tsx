@@ -15,10 +15,11 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { AuthPage } from '@/pages/AuthPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import ItemsPage from '@/pages/ItemsPage';
-// import ProductManagement from '@/pages/ProductManagementPage';
+import AdminPage from '@/pages/AdminPage';
 
 const AppContent: React.FC = () => {
   const { theme } = useTheme();
+  window.addEventListener("storage", (e) => console.log("Storage changed", e));
 
 
   useEffect(() => {
@@ -71,7 +72,7 @@ const AppContent: React.FC = () => {
 
 
 
-      {/* <Route
+      <Route
           path="/admin"
           element={
             <ProtectedRoute>
@@ -79,8 +80,8 @@ const AppContent: React.FC = () => {
             </ProtectedRoute>
           }
         >
-          <Route index element={<ProductManagement />} />
-        </Route> */}
+          <Route index element={<AdminPage />} />
+        </Route>
 
 
 

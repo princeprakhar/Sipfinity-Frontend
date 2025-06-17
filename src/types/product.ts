@@ -79,3 +79,81 @@ export interface LikeProductRequest {
   like: boolean;
   dislike: boolean;
 }
+
+export interface CreateProductRequest {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  category: string;
+  size?: string;
+  images?: File[];
+  material?: string;
+  status?: string;
+  stock: number;
+  services?: Array<{ name: string; link: string }>;
+}
+
+export interface UpdateProductRequest {
+  title?: string;
+  description?: string;
+  price?: number;
+  category?: string;
+  size?: string;
+  images?: File[];
+  material?: string;
+  status?: string;
+  stock?: number;
+  services?: Array<{ name: string; link: string }>;
+}
+
+export interface DashboardStats {
+  total_products: number;
+  total_users: number;
+  total_reviews: number;
+  flagged_reviews: number;
+}
+
+export interface PaginationResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    total_pages?: number;
+  };
+}
+
+export interface SearchProductsParams {
+  q?: string;
+  category?: string;
+  brand?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface BatchDeleteRequest {
+  product_ids: number[];
+}
+
+export interface BatchDeleteResponse {
+  success_count: number;
+  total_count: number;
+  errors?: string[];
+}
+
+export interface Review {
+  id: number;
+  product_id: number;
+  user_id: number;
+  rating: number;
+  comment: string;
+  is_flagged: boolean;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface ModerateReviewRequest {
+  action: 'approve' | 'reject' | 'flag';
+  reason?: string;
+}

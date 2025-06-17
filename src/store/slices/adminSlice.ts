@@ -1,363 +1,350 @@
-// store/adminProductSlice.ts
+// store/slices/adminSlice.ts
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
-import type { Product, ProductFilters } from '@/types/product';
-import { adminProductService } from '@/services/productService';
-import type { ApiError } from '@/types';
+import { AdminService } from '@/services/adminService';
+import type {
+  Product,
+  CreateProductRequest,
+  UpdateProductRequest,
+  DashboardStats,
+  // PaginationResponse,
+  SearchProductsParams,
+  // BatchDeleteResponse,
+  Review,
+} from '@/types/product';
 
-interface AdminProductState {
-  products: Product[];
-  categories: string[];
-  loading: boolean;
-  error: string | null;
-  filters: ProductFilters;
-  selectedProducts: string[];
-  currentPage: number;
-  totalPages: number;
-  itemsPerPage: number;
-  uploadingImages: boolean;
-  currentProduct: Product | null;
+interface AdminState {
+  dashboard: {
+    stats: DashboardStats | null;
+    loading: boolean;
+    error: string | null;
+  };
+  products: {
+    list: Product[];
+    currentProduct: Product | null;
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      total_pages?: number;
+    } | null;
+    loading: boolean;
+    error: string | null;
+  };
+  reviews: {
+    flaggedReviews: Review[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      total_pages?: number;
+    } | null;
+    loading: boolean;
+    error: string | null;
+  };
 }
 
-const initialState: AdminProductState = {
-  products: [],
-  categories: [],
-  loading: false,
-  error: null,
-  filters: {
-    category: '',
-    priceRange: [0, 1000],
-    status: '',
-    size: '',
-    search: ''
+const initialState: AdminState = {
+  dashboard: {
+    stats: null,
+    loading: false,
+    error: null,
   },
-  selectedProducts: [],
-  currentPage: 1,
-  totalPages: 1,
-  itemsPerPage: 12,
-  uploadingImages: false,
-  currentProduct: null
+  products: {
+    list: [],
+    currentProduct: null,
+    pagination: null,
+    loading: false,
+    error: null,
+  },
+  reviews: {
+    flaggedReviews: [],
+    pagination: null,
+    loading: false,
+    error: null,
+  },
 };
 
-// Async thunks for admin operations
-export const fetchAdminProducts = createAsyncThunk(
-  'adminProducts/fetchProducts',
-  async (params: { page: number; filters: ProductFilters }, { rejectWithValue }) => {
+// Async Thunks
+export const fetchDashboardStats = createAsyncThunk(
+  'admin/fetchDashboardStats',
+  async (_, { rejectWithValue }) => {
     try {
-      // Convert filters to the format expected by your backend
-      const apiFilters: Partial<Product> = {};
-      
-      if (params.filters.category) {
-        apiFilters.category = params.filters.category;
-      }
-      
-      if (params.filters.status) {
-        apiFilters.status = params.filters.status as 'active' | 'inactive';
-      }
-      
-      if (params.filters.size) {
-        apiFilters.size = params.filters.size;
-      }
-      
-      if (params.filters.search) {
-        (apiFilters as any).search = params.filters.search;
-      }
-      
-      if (params.filters.priceRange && (params.filters.priceRange[0] > 0 || params.filters.priceRange[1] < 1000)) {
-        (apiFilters as any).minPrice = params.filters.priceRange[0];
-        (apiFilters as any).maxPrice = params.filters.priceRange[1];
-      }
-
-      const response = await adminProductService.fetchProducts(params.page, apiFilters);
-      
-      return {
-        products: response.data,
-        totalPages: response.totalPages,
-        currentPage: params.page
-      };
-    } catch (error) {
-      return rejectWithValue(error as ApiError);
+      return await AdminService.getDashboard();
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch dashboard stats');
     }
   }
 );
 
-export const fetchAdminProductById = createAsyncThunk(
-  'adminProducts/fetchProductById',
-  async (id: string, { rejectWithValue }) => {
+export const fetchProducts = createAsyncThunk(
+  'admin/fetchProducts',
+  async ({ page = 1, limit = 20 }: { page?: number; limit?: number }, { rejectWithValue }) => {
     try {
-      const response = await adminProductService.fetchProductById(id);
-      return response;
-    } catch (error) {
-      return rejectWithValue(error as ApiError);
+      return await AdminService.getProducts(page, limit);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch products');
     }
   }
 );
 
-export const addProduct = createAsyncThunk(
-  'adminProducts/addProduct',
-  async (product: Product, { rejectWithValue }) => {
+export const fetchProduct = createAsyncThunk(
+  'admin/fetchProduct',
+  async (productId: number, { rejectWithValue }) => {
     try {
-      const response = await adminProductService.addProduct(product);
-      return response;
-    } catch (error) {
-      return rejectWithValue(error as ApiError);
+      return await AdminService.getProduct(productId);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch product');
+    }
+  }
+);
+
+export const createProduct = createAsyncThunk(
+  'admin/createProduct',
+  async (
+    { productData, images }: { productData: CreateProductRequest; images?: File[] },
+    { rejectWithValue }
+  ) => {
+    try {
+      return await AdminService.createProduct(productData, images);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to create product');
     }
   }
 );
 
 export const updateProduct = createAsyncThunk(
-  'adminProducts/updateProduct',
-  async (product: Product, { rejectWithValue }) => {
+  'admin/updateProduct',
+  async (
+    {
+      productId,
+      productData,
+      images,
+      deleteImageIds,
+    }: {
+      productId: number;
+      productData: UpdateProductRequest;
+      images?: File[];
+      deleteImageIds?: string[];
+    },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await adminProductService.updateProduct(product);
-      return response;
-    } catch (error) {
-      return rejectWithValue(error as ApiError);
+      return await AdminService.updateProduct(productId, productData, images, deleteImageIds);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update product');
     }
   }
 );
 
 export const deleteProduct = createAsyncThunk(
-  'adminProducts/deleteProduct',
-  async (productId: string, { rejectWithValue }) => {
+  'admin/deleteProduct',
+  async (productId: number, { rejectWithValue }) => {
     try {
-      await adminProductService.deleteProducts(productId);
-      return { productId };
-    } catch (error) {
-      return rejectWithValue(error as ApiError);
+      await AdminService.deleteProduct(productId);
+      return productId;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete product');
     }
   }
 );
 
-export const bulkDeleteProducts = createAsyncThunk(
-  'adminProducts/bulkDeleteProducts',
-  async (productIds: string[], { rejectWithValue }) => {
+export const batchDeleteProducts = createAsyncThunk(
+  'admin/batchDeleteProducts',
+  async (productIds: number[], { rejectWithValue }) => {
     try {
-      // Delete products one by one (you might want to implement bulk delete in your backend)
-      const deletePromises = productIds.map(id => adminProductService.deleteProducts(id));
-      await Promise.all(deletePromises);
-      return { productIds };
-    } catch (error) {
-      return rejectWithValue(error as ApiError);
+      const result = await AdminService.batchDeleteProducts(productIds);
+      return { result, productIds };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete products');
     }
   }
 );
 
-export const uploadProductImages = createAsyncThunk(
-  'adminProducts/uploadImages',
-  async (params: { productId: string; images: File[] }, { rejectWithValue }) => {
+export const searchProducts = createAsyncThunk(
+  'admin/searchProducts',
+  async (params: SearchProductsParams, { rejectWithValue }) => {
     try {
-      const response = await adminProductService.uploadImages(params.productId, params.images);
-      return { productId: params.productId, imageUrls: response };
-    } catch (error) {
-      return rejectWithValue(error as ApiError);
+      return await AdminService.searchProducts(params);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to search products');
     }
   }
 );
 
-export const deleteProductImage = createAsyncThunk(
-  'adminProducts/deleteImage',
-  async (params: { productId: string; imageId: string }, { rejectWithValue }) => {
+
+export const deleteProductImage = createAsyncThunk<
+  any,
+  { productID: number; imageIds: string },
+  { rejectValue: string }
+>(
+  'admin/deleteImageIds',
+  async ({ productID, imageIds }, { rejectWithValue }) => {
     try {
-      await adminProductService.deleteImages(params.productId, params.imageId);
-      return { productId: params.productId, imageId: params.imageId };
-    } catch (error) {
-      return rejectWithValue(error as ApiError);
+      return await AdminService.deleteProductImage(productID, imageIds);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to delete images');
+    }
+  }
+)
+
+export const fetchFlaggedReviews = createAsyncThunk(
+  'admin/fetchFlaggedReviews',
+  async ({ page = 1, limit = 20 }: { page?: number; limit?: number }, { rejectWithValue }) => {
+    try {
+      return await AdminService.getFlaggedReviews(page, limit);
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch flagged reviews');
     }
   }
 );
 
-const adminProductSlice = createSlice({
-  name: 'adminProducts',
+const adminSlice = createSlice({
+  name: 'admin',
   initialState,
   reducers: {
-    setFilters: (state, action: PayloadAction<Partial<ProductFilters>>) => {
-      state.filters = { ...state.filters, ...action.payload };
-      state.currentPage = 1;
+    clearProductError: (state) => {
+      state.products.error = null;
     },
-    setCurrentPage: (state, action: PayloadAction<number>) => {
-      state.currentPage = action.payload;
+    clearDashboardError: (state) => {
+      state.dashboard.error = null;
     },
-    toggleProductSelection: (state, action: PayloadAction<string>) => {
-      const productId = action.payload;
-      const index = state.selectedProducts.indexOf(productId);
-      if (index === -1) {
-        state.selectedProducts.push(productId);
-      } else {
-        state.selectedProducts.splice(index, 1);
-      }
-    },
-    selectAllProducts: (state) => {
-      state.selectedProducts = state.products.map((p: Product) => p.id.toString());
-    },
-    clearSelection: (state) => {
-      state.selectedProducts = [];
-    },
-    clearError: (state) => {
-      state.error = null;
-    },
-    resetProducts: (state) => {
-      state.products = [];
-      state.currentPage = 1;
-      state.totalPages = 1;
-      state.selectedProducts = [];
-      state.currentProduct = null;
+    clearReviewsError: (state) => {
+      state.reviews.error = null;
     },
     setCurrentProduct: (state, action: PayloadAction<Product | null>) => {
-      state.currentProduct = action.payload;
-    }
+      state.products.currentProduct = action.payload;
+    },
   },
   extraReducers: (builder) => {
+    // Dashboard
     builder
-      // Fetch products
-      .addCase(fetchAdminProducts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+      .addCase(fetchDashboardStats.pending, (state) => {
+        state.dashboard.loading = true;
+        state.dashboard.error = null;
       })
-      .addCase(fetchAdminProducts.fulfilled, (state, action) => {
-        state.loading = false;
-        state.products = action.payload.products;
-        state.totalPages = action.payload.totalPages;
-        state.currentPage = action.payload.currentPage;
+      .addCase(fetchDashboardStats.fulfilled, (state, action) => {
+        state.dashboard.loading = false;
+        state.dashboard.stats = action.payload;
       })
-      .addCase(fetchAdminProducts.rejected, (state, action) => {
-        state.loading = false;
-        state.error = (action.payload as ApiError)?.message || 'Failed to fetch products';
+      .addCase(fetchDashboardStats.rejected, (state, action) => {
+        state.dashboard.loading = false;
+        state.dashboard.error = action.payload as string;
       })
-      // Fetch single product
-      .addCase(fetchAdminProductById.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+
+    // Products
+      .addCase(fetchProducts.pending, (state) => {
+        state.products.loading = true;
+        state.products.error = null;
       })
-      .addCase(fetchAdminProductById.fulfilled, (state, action) => {
-        state.loading = false;
-        state.currentProduct = action.payload;
-        // Update product in the list if it exists
-        const index = state.products.findIndex((p: Product) => p.id === action.payload.id);
-        if (index !== -1) {
-          state.products[index] = action.payload;
-        }
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.products.loading = false;
+        state.products.list = action.payload.data;
+        state.products.pagination = action.payload.pagination;
       })
-      .addCase(fetchAdminProductById.rejected, (state, action) => {
-        state.loading = false;
-        state.error = (action.payload as ApiError)?.message || 'Failed to fetch product';
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.products.loading = false;
+        state.products.error = action.payload as string;
       })
-      // Add product
-      .addCase(addProduct.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+
+      .addCase(fetchProduct.pending, (state) => {
+        state.products.loading = true;
+        state.products.error = null;
       })
-      .addCase(addProduct.fulfilled, (state, action) => {
-        state.loading = false;
-        state.products.unshift(action.payload);
-        state.currentProduct = action.payload;
+      .addCase(fetchProduct.fulfilled, (state, action) => {
+        state.products.loading = false;
+        state.products.currentProduct = action.payload;
       })
-      .addCase(addProduct.rejected, (state, action) => {
-        state.loading = false;
-        state.error = (action.payload as ApiError)?.message || 'Failed to add product';
+      .addCase(fetchProduct.rejected, (state, action) => {
+        state.products.loading = false;
+        state.products.error = action.payload as string;
       })
-      // Update product
+
+      .addCase(createProduct.pending, (state) => {
+        state.products.loading = true;
+        state.products.error = null;
+      })
+      .addCase(createProduct.fulfilled, (state, action) => {
+        state.products.loading = false;
+        state.products.list.unshift(action.payload);
+      })
+      .addCase(createProduct.rejected, (state, action) => {
+        state.products.loading = false;
+        state.products.error = action.payload as string;
+      })
+
       .addCase(updateProduct.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.products.loading = true;
+        state.products.error = null;
       })
       .addCase(updateProduct.fulfilled, (state, action) => {
-        state.loading = false;
-        const index = state.products.findIndex((p: Product) => p.id === action.payload.id);
+        state.products.loading = false;
+        const index = state.products.list.findIndex(p => p.id === action.payload.id);
         if (index !== -1) {
-          state.products[index] = action.payload;
+          state.products.list[index] = action.payload;
         }
-        if (state.currentProduct?.id === action.payload.id) {
-          state.currentProduct = action.payload;
+        if (state.products.currentProduct?.id === action.payload.id) {
+          state.products.currentProduct = action.payload;
         }
       })
       .addCase(updateProduct.rejected, (state, action) => {
-        state.loading = false;
-        state.error = (action.payload as ApiError)?.message || 'Failed to update product';
+        state.products.loading = false;
+        state.products.error = action.payload as string;
       })
-      // Delete single product
-      .addCase(deleteProduct.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
+
       .addCase(deleteProduct.fulfilled, (state, action) => {
-        state.loading = false;
-        state.products = state.products.filter((p: Product) => p.id.toString() !== action.payload.productId);
-        state.selectedProducts = state.selectedProducts.filter(id => id !== action.payload.productId);
-        if (state.currentProduct?.id.toString() === action.payload.productId) {
-          state.currentProduct = null;
+        state.products.list = state.products.list.filter(p => p.id !== action.payload);
+        if (state.products.currentProduct?.id === action.payload) {
+          state.products.currentProduct = null;
         }
       })
-      .addCase(deleteProduct.rejected, (state, action) => {
-        state.loading = false;
-        state.error = (action.payload as ApiError)?.message || 'Failed to delete product';
+
+      .addCase(batchDeleteProducts.fulfilled, (state, action) => {
+        const deletedIds = action.payload.productIds;
+        state.products.list = state.products.list.filter(p => !deletedIds.includes(p.id));
       })
-      // Bulk delete products
-      .addCase(bulkDeleteProducts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+
+      .addCase(searchProducts.fulfilled, (state, action) => {
+        state.products.list = action.payload.data;
+        state.products.pagination = action.payload.pagination;
       })
-      .addCase(bulkDeleteProducts.fulfilled, (state, action) => {
-        state.loading = false;
-        state.products = state.products.filter((p: Product) => !action.payload.productIds.includes(p.id.toString()));
-        state.selectedProducts = [];
+
+    // Reviews
+      .addCase(fetchFlaggedReviews.pending, (state) => {
+        state.reviews.loading = true;
+        state.reviews.error = null;
       })
-      .addCase(bulkDeleteProducts.rejected, (state, action) => {
-        state.loading = false;
-        state.error = (action.payload as ApiError)?.message || 'Failed to delete products';
+      .addCase(fetchFlaggedReviews.fulfilled, (state, action) => {
+        state.reviews.loading = false;
+        state.reviews.flaggedReviews = action.payload.data;
+        state.reviews.pagination = action.payload.pagination;
       })
-      // Upload images
-      .addCase(uploadProductImages.pending, (state) => {
-        state.uploadingImages = true;
-        state.error = null;
+      .addCase(fetchFlaggedReviews.rejected, (state, action) => {
+        state.reviews.loading = false;
+        state.reviews.error = action.payload as string;
       })
-      .addCase(uploadProductImages.fulfilled, (state, action) => {
-        state.uploadingImages = false;
-        // Update the product with new images
-        const index = state.products.findIndex((p: Product) => p.id.toString() === action.payload.productId);
-        if (index !== -1) {
-          const currentImages = (state.products[index] as any).images || [];
-          (state.products[index] as any).images = [...currentImages, ...action.payload.imageUrls];
-        }
-        if (state.currentProduct?.id.toString() === action.payload.productId) {
-          const currentImages = (state.currentProduct as any).images || [];
-          (state.currentProduct as any).images = [...currentImages, ...action.payload.imageUrls];
-        }
+
+
+      //deleteProductImage
+      .addCase(deleteProductImage.pending, (state) => {
+        state.products.error = null;
       })
-      .addCase(uploadProductImages.rejected, (state, action) => {
-        state.uploadingImages = false;
-        state.error = (action.payload as ApiError)?.message || 'Failed to upload images';
-      })
-      // Delete image
       .addCase(deleteProductImage.fulfilled, (state, action) => {
-        const index = state.products.findIndex((p: Product) => p.id.toString() === action.payload.productId);
-        if (index !== -1) {
-          const currentImages = (state.products[index] as any).images || [];
-          (state.products[index] as any).images = currentImages.filter(
-            (img: any) => img.id !== action.payload.imageId
-          );
+        const productId = action.payload.productId;
+        const imageId = action.payload.imageId;
+        const productIndex = state.products.list.findIndex(p => p.id === productId);
+        if (productIndex !== -1) {
+          const product = state.products.list[productIndex];
+          const imageIndex = product.images.findIndex(i => i.id === imageId);
+          if (imageIndex !== -1) {
+            product.images.splice(imageIndex, 1);
+          }
         }
-        if (state.currentProduct?.id.toString() === action.payload.productId) {
-          const currentImages = (state.currentProduct as any).images || [];
-          (state.currentProduct as any).images = currentImages.filter(
-            (img: any) => img.id !== action.payload.imageId
-          );
-        }
-      })
+      } )
       .addCase(deleteProductImage.rejected, (state, action) => {
-        state.error = (action.payload as ApiError)?.message || 'Failed to delete image';
-      });
-  }
+        state.products.error = action.payload as string;
+      })
+  },
 });
 
-export const {
-  setFilters: setAdminFilters,
-  setCurrentPage: setAdminCurrentPage,
-  toggleProductSelection: toggleAdminProductSelection,
-  selectAllProducts: selectAllAdminProducts,
-  clearSelection: clearAdminSelection,
-  clearError: clearAdminError,
-  resetProducts: resetAdminProducts,
-  setCurrentProduct
-} = adminProductSlice.actions;
-
-export default adminProductSlice.reducer;
+export const { clearProductError, clearDashboardError, clearReviewsError, setCurrentProduct } = adminSlice.actions;
+export default adminSlice.reducer;

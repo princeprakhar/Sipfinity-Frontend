@@ -1,43 +1,42 @@
 // components/ui/FileUpload.tsx
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useTheme } from '@/hooks/';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 
 interface FileUploadProps {
   onFilesSelected: (files: File[]) => void;
   accept?: string;
   maxFiles?: number;
+  multiple?: boolean;
   currentFiles?: string[];
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
   onFilesSelected,
-  accept = '*',
-  maxFiles = 1,
-  currentFiles = []
+  accept = 'image/*',
+  maxFiles = 5,
+  multiple = true,
 }) => {
-  const { theme } = useTheme();
-  const [preview, setPreview] = useState<string[]>(currentFiles);
+  const [files, setFiles] = useState<File[]>([]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    onFilesSelected(acceptedFiles);
-    
-    // Create preview URLs for images
-    const previewUrls = acceptedFiles.map(file => URL.createObjectURL(file));
-    setPreview(previewUrls);
-  }, [onFilesSelected]);
+    const newFiles = [...files, ...acceptedFiles].slice(0, maxFiles);
+    setFiles(newFiles);
+    onFilesSelected(newFiles);
+  }, [files, maxFiles, onFilesSelected]);
+
+  const removeFile = (index: number) => {
+    const newFiles = files.filter((_, i) => i !== index);
+    setFiles(newFiles);
+    onFilesSelected(newFiles);
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: accept === 'image/*' ? { 'image/*': [] } : undefined,
-    maxFiles
+    accept: { [accept]: [] },
+    maxFiles: maxFiles - files.length,
+    multiple,
   });
-
-  const removeFile = (index: number) => {
-    const newPreview = preview.filter((_, i) => i !== index);
-    setPreview(newPreview);
-  };
 
   return (
     <div className="space-y-4">
@@ -45,43 +44,39 @@ const FileUpload: React.FC<FileUploadProps> = ({
         {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
           isDragActive
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-            : theme === 'dark'
-            ? 'border-gray-600 hover:border-gray-500'
-            : 'border-gray-300 hover:border-gray-400'
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
+            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
         }`}
       >
         <input {...getInputProps()} />
-        <Upload className={`w-8 h-8 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
-        <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-          {isDragActive ? 'Drop files here...' : 'Drag & drop files here, or click to browse'}
+        <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {isDragActive
+            ? 'Drop the files here...'
+            : `Drag & drop ${multiple ? 'files' : 'a file'} here, or click to select`}
         </p>
-        <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-          {accept === 'image/*' ? 'Images only' : 'Any file type'}
+        <p className="text-xs text-gray-500 mt-2">
+          {maxFiles - files.length} more file{maxFiles - files.length !== 1 ? 's' : ''} allowed
         </p>
       </div>
 
-      {/* Preview */}
-      {preview.length > 0 && (
-        <div className="grid grid-cols-2 gap-4">
-          {preview.map((url, index) => (
-            <div key={index} className="relative">
-              {accept === 'image/*' ? (
+      {files.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {files.map((file, index) => (
+            <div key={index} className="relative group">
+              <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-600">
                 <img
-                  src={url}
+                  src={URL.createObjectURL(file)}
                   alt={`Preview ${index + 1}`}
-                  className="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                  className="w-full h-full object-cover"
                 />
-              ) : (
-                <div className={`w-full h-32 flex items-center justify-center rounded-lg border ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'}`}>
-                  <ImageIcon className={`w-8 h-8 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} />
-                </div>
-              )}
+              </div>
               <button
+                type="button"
                 onClick={() => removeFile(index)}
-                className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
               >
-                <X className="w-3 h-3" />
+                <X className="w-4 h-4" />
               </button>
             </div>
           ))}

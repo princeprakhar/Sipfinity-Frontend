@@ -22,7 +22,6 @@ const api = axios.create({
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
-    console.log("Access Token",token)
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -43,12 +42,12 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       
       const refreshToken = localStorage.getItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
-      console.log("refresh token", refreshToken);
+      console.log("refresh token from the localStorage", refreshToken);
       if (refreshToken) {
         try {
           interface RefreshTokenResponse {
             data: {
-              access_token: string;
+              token:{access_token: string,refresh_token:string}
             }
           }
 
@@ -56,8 +55,11 @@ api.interceptors.response.use(
             refresh_token: refreshToken,
           });
           
-          const { access_token } = response.data.data;
+          const  access_token  = response.data.data.token.access_token;
+          const  refresh_token = response.data.data.token.refresh_token;
+          console.log(response.data.data);
           localStorage.setItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN, access_token);
+          localStorage.setItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN,refresh_token)
           
           // Retry original request
           if (originalRequest.headers) {
