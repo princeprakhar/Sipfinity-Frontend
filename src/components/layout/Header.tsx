@@ -5,7 +5,7 @@ import { Container, LogOut, Search } from 'lucide-react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Button } from '@/components/ui/Button';
 import { useAppSelector, useAppDispatch } from '@/hooks';
-import { logout } from '@/store/slices/authSlice';
+import {logOut} from '@/store/slices/authSlice';
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenSearch }) => {
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(logOut());
   };
 
   return (

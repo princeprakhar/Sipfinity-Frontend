@@ -111,20 +111,24 @@ export const refreshToken = createAsyncThunk(
   }
 );
 
+
+export const logOut = createAsyncThunk(
+  'auth/logout',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authService.logout();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error as ApiError);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.tokens = null;
-      state.isAuthenticated = false;
-      state.error = null;
-      state.resetToken = null;
-      state.tokenValidated = false;
-      localStorage.removeItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
-      localStorage.removeItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
-    },
+    
     clearError: (state) => {
       state.error = null;
     },
@@ -182,6 +186,29 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = (action.payload as ApiError)?.message || 'Sign up failed';
       })
+      /// Log Out
+      .addCase(logOut.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(logOut.fulfilled, (state) => {
+        state.isLoading = false;
+        state.user = null;
+        state.tokens = null;
+        state.isAuthenticated = false;
+        state.error = null;
+        localStorage.removeItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
+        localStorage.removeItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
+      })
+      .addCase(logOut.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isAuthenticated = false
+        localStorage.removeItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
+        localStorage.removeItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
+        state.error = (action.payload as ApiError)?.message || 'Logout failed';
+      })
+      // Fetch User Profile
+
       // Forgot Password
       .addCase(forgotPassword.pending, (state) => {
         state.isLoading = true;
@@ -257,5 +284,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError, clearResetState, setCredentials } = authSlice.actions;
+export const {  clearError, clearResetState, setCredentials } = authSlice.actions;
 export default authSlice.reducer;
