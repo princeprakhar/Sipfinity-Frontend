@@ -1,54 +1,139 @@
-# React + TypeScript + Vite
+# Sipfinity Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sipfinity is a modern inventory and product management web application. This repository contains the **frontend** codebase, built with React, Redux Toolkit, RTK Query, and TypeScript. It provides a responsive, theme-aware user interface for browsing, filtering, reviewing, and managing products.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- **Authentication:** Sign up, sign in, password reset, JWT-based protected routes.
+- **Product Browsing:** Paginated, filterable product grid with masonry layout.
+- **Product Details:** Modal with images, description, reviews, and user interactions (like/dislike).
+- **Reviews:** Add, like/dislike, and flag reviews for products.
+- **Admin Panel:** Manage products, categories, and view product stats.
+- **Profile Management:** View and edit user profile, change password.
+- **Theme Support:** Light/dark mode toggle.
+- **Responsive Design:** Works well on desktop and mobile.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Tech Stack
+
+- **React** (with hooks)
+- **Redux Toolkit** (global state management)
+- **RTK Query** (data fetching & caching)
+- **TypeScript** (type safety)
+- **Tailwind CSS** (styling)
+- **React Router** (routing)
+- **React Toastify** (notifications)
+- **Lucide Icons** (iconography)
+
+---
+
+## Project Structure
+
+```
+src/
+  components/      # Reusable UI and feature components
+  pages/           # Route-level pages (Dashboard, Items, Admin, Profile, Auth)
+  services/        # RTK Query API slices (product, review, auth, etc.)
+  store/           # Redux slices and store setup
+  hooks/           # Custom hooks
+  types/           # TypeScript types
+  config/          # API endpoints and config
+  data/            # Mock data (for development)
+  utils/           # Utility functions
+  App.tsx          # Main app component
+  main.tsx         # Entry point
+  index.css        # Global styles
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Getting Started
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Prerequisites
+
+- Node.js (v18+ recommended)
+- npm or yarn
+
+### Installation
+
+```bash
+git clone https://github.com/your-org/sipfinity-frontend.git
+cd sipfinity-frontend
+npm install
 ```
+
+### Running the App
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+---
+
+## Environment Variables
+
+Configure API endpoints in `src/config/api.ts`.  
+You may need to set up a `.env` file for backend URLs if required.
+
+---
+
+## Key Files
+
+- `src/pages/ItemsPage.tsx` — Main product browsing page.
+- `src/components/items/ItemDetailModal.tsx` — Product detail modal with reviews and interactions.
+- `src/services/reviewService.ts` — RTK Query API for reviews and reactions.
+- `src/store/slices/productSlice.ts` — Redux slice for product state.
+- `src/components/admin/ProductModal.tsx` — Admin product add/edit modal.
+
+---
+
+## Customization
+
+- **Theme:** Change default theme in Redux slice or via UI toggle.
+- **API:** Update endpoints in `src/config/api.ts` to match your backend.
+- **Icons:** Uses [Lucide](https://lucide.dev/) for icons.
+
+---
+
+## Contributing
+
+1. Fork the repo
+2. Create your feature branch (`git checkout -b feature/foo`)
+3. Commit your changes (`git commit -am 'Add foo feature'`)
+4. Push to the branch (`git push origin feature/foo`)
+5. Create a Pull Request
+
+---
+
+## License
+
+MIT
+
+---
+
+## Credits
+
+Developed by Prakhar Deep.
+
+---
+
+
+## Support
+
+For issues, open a [GitHub Issue](https://github.com/princeprakhar/Sipfinity-Frontend/issues).
+
+---
+
+**Note:**  
+This is the frontend part. You need the Sipfinity backend running for full functionality.
