@@ -6,7 +6,7 @@ import {
   fetchCategories, 
   setFilters, 
   setCurrentPage,
-  clearError 
+  clearError ,
 } from '@/store/slices/productSlice';
 import FilterTabs from '../components/items/FilterTabs';
 import MasonryGrid from '../components/items/MasonryGrid';
@@ -80,10 +80,14 @@ const ItemsPage: React.FC = () => {
   };
 
   const handleItemClick = (item: Product) => {
+    // Set selected item for detail modal
+    dispatch(clearError()); // Clear any previous errors/ Fetch latest product details 
+
     setSelectedItem(item);
   };
 
   const handleCloseModal = () => {
+    // Reset selected item
     setSelectedItem(null);
   };
 

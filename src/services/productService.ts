@@ -33,6 +33,15 @@ const productService = {
       throw handleApiError(error);
     }
   },
+
+  async fetchProductReviewsById(productId: number): Promise<any> {
+    try {
+      const response = await api.get(API_ENDPOINTS.REVIEWS.PRODUCT(productId));
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error as ApiError);
+    }
+  },
 };
 
 export default productService;

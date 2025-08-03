@@ -74,12 +74,17 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
     data: reviews = [],
     isLoading,
     isError,
-    refetch,
+    refetch, // <-- you already have this from useGetProductReviewsQuery
   } = useGetProductReviewsQuery({
     productId: product.id,
     page: pagination.currentPage,
     limit,
   });
+
+  // Refetch reviews every time modal opens or product changes
+  useEffect(() => {
+    refetch();
+  }, [product.id, refetch]);
 
   const [createReview] = useCreateReviewMutation();
   const [likeReview] = useLikeReviewMutation();
@@ -88,7 +93,7 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
   // Get active images
   const activeImages = product.images?.filter((img) => img.is_active) || [];
 
-  const { data: reactionData } = useGetProductReactionQuery(
+  const { data: reactionData, refetch: refetchReaction } = useGetProductReactionQuery(
     product.id
   ); // pass the current productId
   const [userProductInteraction, setUserProductInteraction] = useState({
@@ -189,9 +194,10 @@ const ItemDetailModal: React.FC<ItemDetailModalProps> = ({
 
   // Handle product like/dislike (top-right interaction bar)
   const debouncedInteraction = useRef(
-    debounce((productId: number, like: boolean, dislike: boolean) => {
-      likeOrDislikeProduct({ productId, like, dislike });
-    }, 500) // Adjust debounce delay as needed
+    debounce(async (productId: number, like: boolean, dislike: boolean) => {
+      await likeOrDislikeProduct({ productId, like, dislike });
+      refetchReaction(); // <-- refetch reaction after mutation
+    }, 50)
   ).current;
 
   const handleProductInteraction = (type: "like" | "dislike") => {
